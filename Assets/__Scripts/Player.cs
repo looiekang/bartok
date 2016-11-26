@@ -44,6 +44,9 @@ public class Player {
 			//  couple of milliseconds), but since we're only doing it once
 			//  every turn, it isn't a problem.
 		}
+
+		eCB.SetSortingLayerName("10"); // This sorts the moving card to the top
+		eCB.eventualSortLayer = handSlotDef.layerName;
 	
 		FanHand ();
 		return( eCB );
@@ -96,16 +99,20 @@ public class Player {
 			//	^	After	the	move,	CardBartok	will	set	the	state	to CBState.hand
 
 
-			// hand[i].transform.localPosition	=	pos;
-			// hand[i].transform.rotation	=	rotQ;
-			// hand[i].state	=	CBState.hand;
+			/* <= This "/*" begins a multiline comment                      // 1
+            hand[i].transform.localPosition = pos;
+            hand[i].transform.rotation = rotQ;
+            hand[i].state = CBState.hand;
+            */  
 
 			// This uses a comparison operator to return a true or false bool
 			// So, if (type == PlayerType.human), hand[i].faceUp is set to true
 			hand[i].faceUp = (type == PlayerType.human);
 
 			// Set the SortOrder of the cards so that they overlap properly
-			hand[i].SetSortOrder(i*4);
+			hand[i].eventualSortOrder = i*4;
+			//hand[i].SetSortOrder(i*4);
+
 		}
 
 	}
