@@ -17,7 +17,7 @@ XMLHashtable xml;
 xml["jeremy"][0]["friend"][0].text
 xml["jeremy"][0].att("age");
 */
-		
+
 
 
 [System.Serializable]
@@ -28,7 +28,7 @@ public class PT_XMLReader {
 	//public TextAsset inputTA;
 	public string xmlText;
 	public PT_XMLHashtable xml;
-	
+
 	/*
 	void Awake() {
 		inputTA = Resources.Load("WellFormedSample") as TextAsset;	
@@ -40,14 +40,14 @@ public class PT_XMLReader {
 		print(output["videocollection"][0]["video"][1]["title"][0].text);
 	}
 	*/
-	
+
 	// This function creates a new XMLHashtable and calls the real Parse()
 	public void Parse(string eS) {
 		xmlText = eS;
 		xml = new PT_XMLHashtable();
 		Parse(eS, xml);
 	}
-	
+
 	// This function will parse a possible series of tags
 	void Parse(string eS, PT_XMLHashtable eH) {
 		eS = eS.Trim();
@@ -56,7 +56,7 @@ public class PT_XMLReader {
 			eS = eS.Trim();
 		}
 	}
-	
+
 	// This function parses a single tag and calls Parse() if it encounters subtags
 	string ParseTag(string eS, PT_XMLHashtable eH) {
 		// search for "<"
@@ -91,20 +91,20 @@ public class PT_XMLReader {
 			//eH["@XML_Header"] = header;
 			return(eS.Substring(ndx2+3));
 		}
-		
+
 		// Find the end of the tag name
-										// For the next few comments, this is what happens when this character is the first one found after the beginning of the tag
+		// For the next few comments, this is what happens when this character is the first one found after the beginning of the tag
 		end1 = eS.IndexOf(" ", ndx);	// This means that we'll have attributes
 		end2 = eS.IndexOf("/", ndx);	// Immediately closes the tag, 
 		end3 = eS.IndexOf(">", ndx);	// This closes a standard tag; look for the closing tag
 		if (end1 == -1) end1 = int.MaxValue;
 		if (end2 == -1) end2 = int.MaxValue;
 		if (end3 == -1) end3 = int.MaxValue;
-		
-		
+
+
 		end = Mathf.Min(end1, end2, end3);
 		string tag = eS.Substring(ndx+1, end-ndx-1);
-		
+
 		// search for this tag in eH. If it's not there, make it
 		if (!eH.ContainsKey(tag)) {
 			eH[tag] = new PT_XMLHashList();
@@ -114,7 +114,7 @@ public class PT_XMLReader {
 		//int thisHashIndex = arrL.Count;
 		PT_XMLHashtable thisHash = new PT_XMLHashtable();
 		arrL.Add(thisHash);
-		
+
 		// Pull the attributes string
 		string atts = "";
 		if (end1 < end3) {
@@ -150,8 +150,8 @@ public class PT_XMLReader {
 			//thisHash[att] = val; // All attributes have to be unique, so this should be okay.
 			thisHash.attSet(att, val);
 		}
-		
-		
+
+
 		// Pull the subs, which is everything contained by this tag but exclusing the tags on either side (e.g. <tag att="hi">.....subs.....</tag>)
 		string subs = "";
 		string leftoverString = "";
@@ -160,7 +160,7 @@ public class PT_XMLReader {
 		if (!singleLine) { // This is a multiline tag (e.g. <tag> ....  </tag>)
 			// find the closing tag
 			int close = eS.IndexOf("</"+tag+">");
-// TODO: Should this do something more if there is no closing tag?
+			// TODO: Should this do something more if there is no closing tag?
 			if (close == -1) {
 				Debug.Log("XMLReader ERROR: XML not well formed. Closing tag </"+tag+"> missing.");
 				return("");
@@ -170,26 +170,26 @@ public class PT_XMLReader {
 		} else {
 			leftoverString = eS.Substring(end3+1);
 		}
-		
+
 		subs = subs.Trim();
 		// Call Parse if this contains subs
 		if (subs.Length > 0) {
 			Parse(subs, thisHash);
 		}
-		
+
 		// Trim and return the leftover string
 		leftoverString = leftoverString.Trim();
 		return(leftoverString);
-	
+
 	}
-	
+
 }
 
 
 
 public class PT_XMLHashList {
 	public ArrayList list = new ArrayList();
-	
+
 	public PT_XMLHashtable this[int s] {
 		get {
 			return(list[s] as PT_XMLHashtable);
@@ -198,17 +198,17 @@ public class PT_XMLHashList {
 			list[s] = value;
 		}
 	}
-	
+
 	public void Add(PT_XMLHashtable eH) {
 		list.Add(eH);
 	}
-	
+
 	public int Count {
 		get {
 			return(list.Count);
 		}
 	}
-	
+
 	public int length {
 		get {
 			return(list.Count);
@@ -218,18 +218,18 @@ public class PT_XMLHashList {
 
 
 public class PT_XMLHashtable {
-	
+
 	public List<string>				keys = new List<string>();
 	public List<PT_XMLHashList>		nodesList = new List<PT_XMLHashList>();
 	public List<string>				attKeys = new List<string>();
 	public List<string>				attributesList = new List<string>();
-	
+
 	public PT_XMLHashList Get(string key) {
 		int ndx = Index(key);
 		if (ndx == -1) return(null);
 		return( nodesList[ndx] );
 	}
-	
+
 	public void Set(string key, PT_XMLHashList val) {
 		int ndx = Index(key);
 		if (ndx != -1) {
@@ -239,16 +239,16 @@ public class PT_XMLHashtable {
 			nodesList.Add(val);
 		}
 	}
-	
+
 	public int Index(string key) {
 		return(keys.IndexOf(key));
 	}
-	
+
 	public int AttIndex(string attKey) {
 		return(attKeys.IndexOf(attKey));
 	}
-	
-	
+
+
 	public PT_XMLHashList this[string s] {
 		get {
 			return( Get(s) );
@@ -257,13 +257,13 @@ public class PT_XMLHashtable {
 			Set( s, value );
 		}
 	}
-	
+
 	public string att(string attKey) {
 		int ndx = AttIndex(attKey);
 		if (ndx == -1) return("");
 		return( attributesList[ndx] );
 	}
-	
+
 	public void attSet(string attKey, string val) {
 		int ndx = AttIndex(attKey);
 		if (ndx == -1) {
@@ -273,7 +273,7 @@ public class PT_XMLHashtable {
 			attributesList[ndx] = val;
 		}
 	}
-	
+
 	public string text {
 		get {
 			int ndx = AttIndex("@");
@@ -290,8 +290,8 @@ public class PT_XMLHashtable {
 			}
 		}
 	}
-	
-	
+
+
 	public string header {
 		get {
 			int ndx = AttIndex("@XML_Header");
@@ -308,8 +308,8 @@ public class PT_XMLHashtable {
 			}
 		}
 	}
-	
-	
+
+
 	public string nodes {
 		get {
 			string s = "";
@@ -319,7 +319,7 @@ public class PT_XMLHashtable {
 			return(s);
 		}
 	}
-	
+
 	public string attributes {
 		get {
 			string s = "";
@@ -329,23 +329,23 @@ public class PT_XMLHashtable {
 			return(s);
 		}
 	}
-	
+
 	public bool ContainsKey(string key) {
 		return( Index(key) != -1 );
 	}
-	
+
 	public bool ContainsAtt(string attKey) {
 		return( AttIndex(attKey) != -1 );
 	}
-	
+
 	public bool HasKey(string key) {
 		return( Index(key) != -1 );
 	}
-	
+
 	public bool HasAtt(string attKey) {
 		return( AttIndex(attKey) != -1 );
 	}
-	
+
 }
 
 /* Old XMLHashtable Class
@@ -401,11 +401,10 @@ public class XMLHashtable {
 /*
 
 1. look for <
-2. look for next >
-3. look for / before the >
+	2. look for next >
+		3. look for / before the >
 
 
 
-*/
-						
-						
+			*/
+
